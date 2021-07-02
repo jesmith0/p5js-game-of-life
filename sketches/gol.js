@@ -2,22 +2,27 @@ var grid;
 
 function setup () {
   createCanvas(400, 400);
-  grid = new Grid(20);
-  grid.randomize();
-
-  print(grid.isValidPosition(0, 0));
+  grid = new Grid(25);
+  grid.draw();
 }
 
-function draw () {
+function generate () {
+  grid.generate($("input").val());
+  grid.draw();
+}
+
+/* function draw () {
   background(250);
 
   grid.updateNeighborCounts();
   grid.updatePopulation();
   grid.draw();
-}
+} */
 
 function mousePressed() {
-  // grid.updatePopulation();
+  grid.updateNeighborCounts();
+  grid.updatePopulation();
+  grid.draw();
 
   // var randomColumn = floor(random(grid.numberOfColumns));
   // var randomRow = floor(random(grid.numberOfRows));
@@ -26,10 +31,7 @@ function mousePressed() {
   // var neighborCount = grid.getNeighbors(randomCell).length;
 
   // print("cell at " + randomCell.column + ", " + randomCell.row + " has " + neighborCount + " neighbors");
-// print(neighbors.length || "undefined");
-
-  grid.updateNeighborCounts();
-  print(grid.cells);
+  // print(neighbors.length || "undefined");
 }
 
 class Grid {
@@ -59,11 +61,16 @@ class Grid {
     }
   }
 
-  randomize () {
+  generate (tx) {
+    var arr = tx.slice(2)
+      .match(/(.{1,4})/g)
+      .map((chunk) => parseInt(chunk, 16).toString(2).padStart(16, '0'))
+      .map((binaryChunk) => binaryChunk.split(''));
+
     for (var column = 0; column < this.numberOfColumns; column ++) {
       for (var row = 0; row < this.numberOfRows; row++) {
-        var value = floor(random(2));
-        this.cells[column][row].setIsAlive(value);
+        console.log(arr[column][row]);
+        this.cells[column][row].setIsAlive(parseInt(arr[column][row]));
       }
     }
   }
@@ -138,7 +145,7 @@ class Cell {
       fill(color(240));
     }
     noStroke();
-    rect(this.column * this.size + 1, this.row * this.size + 1, this.size - 1, this.size - 1);
+    rect(this.column * this.size + 1, this.row * this.size + 1, this.size - 1, this.size - 1, 5, 5, 5);
   }
 
   setIsAlive (value) {
